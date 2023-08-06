@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor @NoArgsConstructor
 @Setter @Getter
 @EqualsAndHashCode @ToString
+@Builder
 @Table(name="users")
 public class UserEntity {
 
@@ -19,7 +20,7 @@ public class UserEntity {
     private String username;
     private String email;
     private String password;
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(name="roles_user", joinColumns = @JoinColumn(name="user_id", referencedColumnName="id"),
             inverseJoinColumns = @JoinColumn(name="roles_id", referencedColumnName = "id_role"))
     private List<Role> roles = new ArrayList<>();

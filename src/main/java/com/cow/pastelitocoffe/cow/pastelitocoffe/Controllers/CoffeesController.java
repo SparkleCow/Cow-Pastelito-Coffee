@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/coffees")
 public class CoffeesController {
 
     private CoffeesRepositoryService repository;
@@ -17,28 +18,28 @@ public class CoffeesController {
         this.repository = repo;
     }
 
-    @GetMapping("/api/coffees")
-    public List<Coffee> coffeeList(){
-        return repository.findAllCoffees();
+    @GetMapping
+    public ResponseEntity<List<Coffee>> coffeeList(){
+        return ResponseEntity.ok(repository.findAllCoffees());
     }
 
-    @PostMapping("/api/createCoffee")
+    @PostMapping
     public ResponseEntity<Coffee> createCoffee(@RequestBody Coffee coffee){
         return (repository.createCoffee(coffee)==null)?ResponseEntity.badRequest().build():ResponseEntity.ok(repository.createCoffee(coffee));
     }
 
-    @GetMapping("/api/findCoffee/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Coffee> findCoffeeById(@PathVariable Long id){
         Coffee coffee = repository.findCoffeeById(id);
         return (coffee==null)?ResponseEntity.notFound().build():ResponseEntity.ok(repository.findCoffeeById(id));
     }
 
-    @DeleteMapping("/api/deleteCoffee/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Coffee> deleteCoffeeById(@PathVariable Long id){
         return (repository.deleteCoffee(id)==null)?ResponseEntity.notFound().build():ResponseEntity.ok(repository.deleteCoffee(id));
     }
 
-    @PutMapping("/api/updateCoffe/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Coffee> updateCoffeeById(@PathVariable Long id, DataCoffee dataCoffee){
         return (repository.updateIngredient(id, dataCoffee)==null)?ResponseEntity.notFound().build():ResponseEntity.ok(repository.updateIngredient(id, dataCoffee));
     }

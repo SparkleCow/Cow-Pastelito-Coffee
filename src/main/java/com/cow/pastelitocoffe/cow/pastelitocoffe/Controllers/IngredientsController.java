@@ -11,8 +11,8 @@ import java.util.List;
 public class IngredientsController {
 
     private IngredientsRepositoryService repositoryService;
-    public IngredientsController(IngredientsRepositoryService repo){
-        this.repositoryService = repo;
+    public IngredientsController(IngredientsRepositoryService repository){
+        this.repositoryService = repository;
     }
 
     @GetMapping("/api/ingredients")

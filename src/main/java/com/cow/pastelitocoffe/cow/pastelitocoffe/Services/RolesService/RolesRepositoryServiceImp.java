@@ -2,10 +2,12 @@ package com.cow.pastelitocoffe.cow.pastelitocoffe.Services.RolesService;
 
 import com.cow.pastelitocoffe.cow.pastelitocoffe.Entities.Users.Role;
 import com.cow.pastelitocoffe.cow.pastelitocoffe.Repository.RolesRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class RolesRepositoryServiceImp implements RolesRepositoryService{
 
     private RolesRepository repository;
