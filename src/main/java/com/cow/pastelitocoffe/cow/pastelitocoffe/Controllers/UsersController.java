@@ -10,14 +10,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/api/users")
 public class UsersController {
     private UsersRepositoryService repository;
     private RolesRepositoryService repositoryRole;
@@ -34,57 +34,61 @@ public class UsersController {
         this.repositoryRole = repositoryRole;
     }
 
-    /*TODO Eliminar contraseñas de las respuestas*/
-    @GetMapping("/api/usuarios")
-    public ResponseEntity<List<UserEntity>> findAllUsers() {
-        return ResponseEntity.ok(repository.findAllUsers());
+    @GetMapping
+    public ResponseEntity<List<DataResponseUserEntity>> findAllUsers() {
+        return ResponseEntity.ok(repository.findAllUsers().stream().map(
+                x -> new DataResponseUserEntity(x.getUsername(), x.getEmail(), x.getRoles())).collect(Collectors.toList())
+        );
     }
 
-    @PostMapping("/api/createUser")
-    public ResponseEntity<String> createUser(@RequestBody DataUserEntity dataUserEntity){
-        if(repository.existsByUsername(dataUserEntity.username())){
+    /*
+     * Endpoint to create a user. Requires an admin role.
+     */
+    @PostMapping("/createUser")
+    public ResponseEntity<String> createUser(@RequestBody DataRequestUserEntity dataRequestUserEntity){
+        if(repository.existsByUsername(dataRequestUserEntity.username())){
             return ResponseEntity.badRequest().body("El usuario ya existe");
         }
         if(repositoryRole.findByName("USER").isPresent()){
             Role role = repositoryRole.findByName("USER").get();
-            UserEntity user = UserEntity.builder().username(dataUserEntity.username()).email(dataUserEntity.email())
-                    .password(encoder.encode(dataUserEntity.password())).roles(Collections.singletonList(role)).build();
+            UserEntity user = UserEntity.builder().username(dataRequestUserEntity.username()).email(dataRequestUserEntity.email())
+                    .password(encoder.encode(dataRequestUserEntity.password())).roles(Collections.singletonList(role)).build();
             repository.createUser(user);
             return ResponseEntity.ok("Usuario creado con éxito");
         }
         return ResponseEntity.internalServerError().build();
     }
 
-    /*TODO
-       Implementar seguridad a este endpoint
+    /*
+    * This endpoint requires a previous admin in database. Require admin role.
     */
-    @PostMapping("/api/createAdmin")
-    public ResponseEntity<String> createAdmin(@RequestBody DataUserEntity dataUserEntity){
-        if(repository.existsByUsername(dataUserEntity.username())){
+    @PostMapping("/createAdmin")
+    public ResponseEntity<String> createAdmin(@RequestBody DataRequestUserEntity dataRequestUserEntity){
+        if(repository.existsByUsername(dataRequestUserEntity.username())){
             return ResponseEntity.badRequest().body("El usuario ya existe");
         }
         if(repositoryRole.findByName("ADMIN").isPresent()){
             Role role = repositoryRole.findByName("ADMIN").get();
-            UserEntity user = UserEntity.builder().username(dataUserEntity.username()).email(dataUserEntity.email())
-                    .password(encoder.encode(dataUserEntity.password())).roles(Collections.singletonList(role)).build();
+            UserEntity user = UserEntity.builder().username(dataRequestUserEntity.username()).email(dataRequestUserEntity.email())
+                    .password(encoder.encode(dataRequestUserEntity.password())).roles(Collections.singletonList(role)).build();
             repository.createUser(user);
             return ResponseEntity.ok("Administrador creado con éxito");
         }
         return ResponseEntity.internalServerError().build();
     }
 
-    /*TODO
-       Implementar seguridad a este endpoint
+    /*
+    * Endpoint to create an employee. Requires an admin role.
     */
-    @PostMapping("/api/createEmployee")
-    public ResponseEntity<String> createEmployee(@RequestBody DataUserEntity dataUserEntity){
-        if(repository.existsByUsername(dataUserEntity.username())){
+    @PostMapping("/createEmployee")
+    public ResponseEntity<String> createEmployee(@RequestBody DataRequestUserEntity dataRequestUserEntity){
+        if(repository.existsByUsername(dataRequestUserEntity.username())){
             return ResponseEntity.badRequest().body("El usuario ya existe");
         }
         if(repositoryRole.findByName("EMPLOYEE").isPresent()){
             Role role = repositoryRole.findByName("EMPLOYEE").get();
-            UserEntity user = UserEntity.builder().username(dataUserEntity.username()).email(dataUserEntity.email())
-                    .password(encoder.encode(dataUserEntity.password())).roles(Collections.singletonList(role)).build();
+            UserEntity user = UserEntity.builder().username(dataRequestUserEntity.username()).email(dataRequestUserEntity.email())
+                    .password(encoder.encode(dataRequestUserEntity.password())).roles(Collections.singletonList(role)).build();
             repository.createUser(user);
             return ResponseEntity.ok("Trabajador creado con éxito");
         }
@@ -92,9 +96,9 @@ public class UsersController {
     }
 
     /*
-    * Login endpoint. It´s enabled to the public
+    * Login endpoint. It is open to the public
     * */
-    @PostMapping("/api/login")
+    @PostMapping
     public ResponseEntity<AuthResponse> login(@RequestBody DataLoginUser dataLoginUser){
         boolean existUser = repository.existsByUsername(dataLoginUser.username());
         if(existUser){

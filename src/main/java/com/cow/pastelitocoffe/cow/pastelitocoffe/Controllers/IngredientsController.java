@@ -10,7 +10,7 @@ import java.util.List;
 @RestController
 public class IngredientsController {
 
-    private IngredientsRepositoryService repositoryService;
+    private final IngredientsRepositoryService repositoryService;
     public IngredientsController(IngredientsRepositoryService repository){
         this.repositoryService = repository;
     }

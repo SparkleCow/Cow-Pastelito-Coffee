@@ -7,13 +7,16 @@ import com.cow.pastelitocoffe.cow.pastelitocoffe.Services.CoffeesService.Coffees
 import com.cow.pastelitocoffe.cow.pastelitocoffe.Services.IngredientsService.IngredientsRepositoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/coffees")
 public class CoffeesController {
 
-    private CoffeesRepositoryService repository;
+    private static final Logger logger = LoggerFactory.getLogger(CoffeesController.class);
+    private final CoffeesRepositoryService repository;
     public CoffeesController(CoffeesRepositoryService repo, IngredientsRepositoryService ingredientsRepository){
         this.repository = repo;
     }

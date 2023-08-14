@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -50,11 +49,12 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthorityEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/coffees/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/coffees").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/coffees/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/coffees/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/coffees", "/api/users/createUser", "/api/users/createEmployee").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/coffees/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/coffees/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
