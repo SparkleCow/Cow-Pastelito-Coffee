@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/ingredients")
 public class IngredientsController {
 
     private final IngredientsRepositoryService repositoryService;
@@ -15,12 +16,12 @@ public class IngredientsController {
         this.repositoryService = repository;
     }
 
-    @GetMapping("/api/ingredients")
+    @GetMapping
     public ResponseEntity<List<Ingredient>> ingredientsList(){
         return ResponseEntity.ok(repositoryService.findAllIngredients());
     }
 
-    @PostMapping("/api/createIngredient")
+    @PostMapping
     public ResponseEntity<Ingredient> createIngredient(@RequestBody Ingredient ingredient){
         if(ingredient.getId()==null){
             return ResponseEntity.ok(repositoryService.createIngredient(ingredient));
@@ -28,20 +29,21 @@ public class IngredientsController {
         return ResponseEntity.badRequest().build();
     }
 
-    @GetMapping("/api/ingredient/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Ingredient> findIngredientById(@PathVariable Long id){
         Ingredient ingredient = repositoryService.findIngredientById(id);
         return (ingredient == null) ? ResponseEntity.notFound().build():ResponseEntity.ok(repositoryService.findIngredientById(id));
     }
 
-    @DeleteMapping("/api/deleteIngredient/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Ingredient> deleteIngredient(@PathVariable Long id){
         return (repositoryService.deleteIngredient(id)==null) ? ResponseEntity.notFound().build():ResponseEntity.ok(repositoryService.deleteIngredient(id));
     }
 
-    @PutMapping("/api/updateIngredient/{id}")
-    public ResponseEntity<Ingredient> updateIngredient(@PathVariable Long id, DataIngredient dataIngredient){
-        return (repositoryService.updateIngredientById(id, dataIngredient)==null) ?
-                ResponseEntity.notFound().build():ResponseEntity.ok(repositoryService.updateIngredientById(id, dataIngredient));
+    @PutMapping("/{id}")
+    public ResponseEntity<Ingredient> updateIngredient(@PathVariable Long id, @RequestBody DataIngredient dataIngredient){
+        Ingredient ingredient = repositoryService.updateIngredientById(id, dataIngredient);
+        System.out.print(ingredient);
+        return (ingredient==null) ? ResponseEntity.notFound().build():ResponseEntity.ok(ingredient);
     }
 }

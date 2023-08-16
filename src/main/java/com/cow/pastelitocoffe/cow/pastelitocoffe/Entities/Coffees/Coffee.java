@@ -1,5 +1,6 @@
 package com.cow.pastelitocoffe.cow.pastelitocoffe.Entities.Coffees;
 
+import com.cow.pastelitocoffe.cow.pastelitocoffe.Entities.Ingredients.AmountPerIngredient;
 import com.cow.pastelitocoffe.cow.pastelitocoffe.Entities.Ingredients.Ingredient;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,27 +24,35 @@ public class Coffee {
     private String urlImage;
     @Column(name = "shipping_price")
     private Double shippingPrice;
+
+    @ElementCollection
+    @CollectionTable(name = "coffee_amount_per_ingredients", joinColumns = @JoinColumn(name = "coffee_id"))
+    private List<AmountPerIngredient> amountPerIngredients = new ArrayList<>();
+
     @ManyToMany()
     @JoinTable(name = "coffee_ingredients", joinColumns = @JoinColumn(name = "coffees_id"),
             inverseJoinColumns = @JoinColumn(name = "ingredients_id"))
     private List<Ingredient> ingredients = new ArrayList<>();
 
-    /*Method that allows us to update our coffee object from a dataCoffee record*/
-    public void updateCoffee(DataCoffee dataCoffee){
-        if(dataCoffee.name()!=null&&(!dataCoffee.name().equals(""))){
-            this.name = dataCoffee.name();
+    /*Method that allows us to update our coffee object from a dataUpdateCoffee record*/
+    public void updateCoffee(Coffee coffeeUpdate){
+        if(coffeeUpdate.getName()!=null&&(!coffeeUpdate.getName().equals(""))){
+            this.name = coffeeUpdate.getName();
         }
-        if(dataCoffee.description()!=null&&(!dataCoffee.description().equals(""))){
-            this.description = dataCoffee.description();
+        if(coffeeUpdate.getDescription()!=null&&(!coffeeUpdate.getDescription().equals(""))){
+            this.description = coffeeUpdate.getDescription();
         }
-        if(dataCoffee.price()!=null){
-            this.price = dataCoffee.price();
+        if(coffeeUpdate.getPrice()!=null){
+            this.price = coffeeUpdate.getPrice();
         }
-        if(dataCoffee.urlImage()!=null&&(!dataCoffee.urlImage().equals(""))){
-            this.urlImage = dataCoffee.urlImage();
+        if(coffeeUpdate.getUrlImage()!=null&&(!coffeeUpdate.getUrlImage().equals(""))){
+            this.urlImage = coffeeUpdate.getUrlImage();
         }
-        if(dataCoffee.shippingPrice()!=null){
-            this.shippingPrice = dataCoffee.shippingPrice();
+        if(coffeeUpdate.getShippingPrice()!=null){
+            this.shippingPrice = coffeeUpdate.getShippingPrice();
+        }
+        if(coffeeUpdate.getAmountPerIngredients()!=null){
+            this.amountPerIngredients = coffeeUpdate.getAmountPerIngredients();
         }
     }
 }

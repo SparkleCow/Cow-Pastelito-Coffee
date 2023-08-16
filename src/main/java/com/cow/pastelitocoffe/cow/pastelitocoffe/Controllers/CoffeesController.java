@@ -2,7 +2,7 @@ package com.cow.pastelitocoffe.cow.pastelitocoffe.Controllers;
 
 
 import com.cow.pastelitocoffe.cow.pastelitocoffe.Entities.Coffees.Coffee;
-import com.cow.pastelitocoffe.cow.pastelitocoffe.Entities.Coffees.DataCoffee;
+import com.cow.pastelitocoffe.cow.pastelitocoffe.Entities.Coffees.DataUpdateCoffee;
 import com.cow.pastelitocoffe.cow.pastelitocoffe.Services.CoffeesService.CoffeesRepositoryService;
 import com.cow.pastelitocoffe.cow.pastelitocoffe.Services.IngredientsService.IngredientsRepositoryService;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +28,14 @@ public class CoffeesController {
 
     @PostMapping
     public ResponseEntity<Coffee> createCoffee(@RequestBody Coffee coffee){
+        System.out.print(coffee);
         return (repository.createCoffee(coffee)==null)?ResponseEntity.badRequest().build():ResponseEntity.ok(repository.createCoffee(coffee));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Coffee> findCoffeeById(@PathVariable Long id){
         Coffee coffee = repository.findCoffeeById(id);
-        return (coffee==null)?ResponseEntity.notFound().build():ResponseEntity.ok(repository.findCoffeeById(id));
+        return (coffee==null)?ResponseEntity.notFound().build():ResponseEntity.ok(coffee);
     }
 
     @DeleteMapping("/{id}")
@@ -43,7 +44,7 @@ public class CoffeesController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Coffee> updateCoffeeById(@PathVariable Long id, DataCoffee dataCoffee){
-        return (repository.updateIngredient(id, dataCoffee)==null)?ResponseEntity.notFound().build():ResponseEntity.ok(repository.updateIngredient(id, dataCoffee));
+    public ResponseEntity<Coffee> updateCoffeeById(@PathVariable Long id, @RequestBody Coffee coffeeUpdate){
+        return (repository.updateCoffee(id, coffeeUpdate)==null)?ResponseEntity.notFound().build():ResponseEntity.ok(repository.updateCoffee(id, coffeeUpdate));
     }
 }

@@ -1,12 +1,13 @@
 package com.cow.pastelitocoffe.cow.pastelitocoffe.Services.CoffeesService;
 
 import com.cow.pastelitocoffe.cow.pastelitocoffe.Entities.Coffees.Coffee;
-import com.cow.pastelitocoffe.cow.pastelitocoffe.Entities.Coffees.DataCoffee;
+import com.cow.pastelitocoffe.cow.pastelitocoffe.Entities.Coffees.DataUpdateCoffee;
 import com.cow.pastelitocoffe.cow.pastelitocoffe.Entities.Ingredients.Ingredient;
 import com.cow.pastelitocoffe.cow.pastelitocoffe.Repository.CoffeesRepository;
 import com.cow.pastelitocoffe.cow.pastelitocoffe.Services.IngredientsService.IngredientsRepositoryService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,14 +34,14 @@ public class CoffeesRepositoryServiceImp implements CoffeesRepositoryService {
 
     @Override
     public Coffee createCoffee(Coffee coffee){
-        if(coffee.getIngredients().isEmpty()){
+        System.out.print(coffee);
+        if(coffee.getIngredients().isEmpty() || coffee.getAmountPerIngredients().isEmpty()){
             return null;
         }
-        List<Ingredient> existingIngredients = ingredientsRepository.findAllIngredientsById(coffee.getIngredients().
+        coffee.setIngredients(ingredientsRepository.findAllIngredientsById(coffee.getIngredients().
                 stream()
                 .map(Ingredient::getId)
-                .collect(Collectors.toList()));
-        coffee.setIngredients(existingIngredients);
+                .collect(Collectors.toList())));
         return repository.save(coffee);
     }
 
@@ -55,13 +56,16 @@ public class CoffeesRepositoryServiceImp implements CoffeesRepositoryService {
     }
 
     @Override
-    public Coffee updateIngredient(Long id, DataCoffee dataCoffee) {
+    public Coffee updateCoffee(Long id, Coffee coffeeUpdate){
+        System.out.print(coffeeUpdate);
         Optional<Coffee> coffeeOpt = repository.findById(id);
         if(coffeeOpt.isPresent()){
             Coffee coffee = coffeeOpt.get();
-            coffee.updateCoffee(dataCoffee);
-            repository.save(coffee);
-            return coffee;
+            coffee.updateCoffee(coffeeUpdate);
+            if(coffeeUpdate.getIngredients()!=null){
+                coffee.setIngredients(ingredientsRepository.findAllIngredientsById(coffeeUpdate.getIngredients().stream().map(Ingredient::getId).collect(Collectors.toList())));
+            }
+            return repository.save(coffee);
         }
         return null;
     }

@@ -49,12 +49,14 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthorityEntryPoint))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/calculateCoffee/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/coffees/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/coffees", "/api/users/createUser", "/api/users/createEmployee").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/coffees/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/coffees/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasAuthority("ADMIN")
+                        .requestMatchers("/api/ingredients/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
